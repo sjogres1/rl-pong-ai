@@ -4,6 +4,7 @@ from random import randint
 import pickle
 import numpy as np
 from simple_ai import PongAi
+from agent import Agent
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -21,7 +22,7 @@ episodes = 10
 player_id = 1
 opponent_id = 3 - player_id
 opponent = PongAi(env, opponent_id)
-player = PongAi(env, player_id)
+player = Agent(env, player_id)
 
 env.set_names(player.get_name(), opponent.get_name())
 

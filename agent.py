@@ -2,6 +2,10 @@
 from pong import Pong
 from policy import Policy
 from torch.distributions import Categorical
+import torch
+import torch.nn.functional as F
+
+
 
 policy = Policy(3)
 
@@ -15,7 +19,7 @@ class Agent(object):
         self.name = "uber_AI"
         self.train_device = "cpu"
         self.policy = policy.to(self.train_device)
-        self.optimizer = self.torch.optim.RMSprop(policy.parameters(),lr=5e-3)
+        self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=5e-3)
         # self.batch_size = 3
         self.gamma = 0.99
         self.observations = []
@@ -27,16 +31,19 @@ class Agent(object):
         """ Returns name of the agent """
         return self.name
 
-    def get_action(self, ob=None):
-        """ Returns the next action of the agent"""
-        #player = self.env.player1 if self.player_id == 1 else self.env.player2
-        #action = self.env.MOVE_UP
+
+    def get_action(self, observation, ob=None):
+        """ Returns the next action of the agent """
+        player = self.env.player1 if self.player_id == 1 else self.env.player2
+        action = self.env.MOVE_UP
+        self.policy.preprocess(observation)
+
 
 
         return action
 
     def reset(self):
-        """ Resets the agent to inital state """"
+        """ Resets the agent to inital state """
         raise NotImplementedError("Implementoi tämä, vitun perse")
         # return
 
@@ -61,3 +68,8 @@ class Agent(object):
 
 
 
+
+def update_policy(self):
+    self.optimizer.step()
+    self.optimizer.zero_grad()
+>>>>>>> 746516660f6d4a580d0397d581d81b86368e0fce

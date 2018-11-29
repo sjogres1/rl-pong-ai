@@ -41,10 +41,10 @@ class Agent(object):
         aprob = self.policy.forward()
         m = Categorical(probs)
 
-        action = m.sample()
+        action = m.sample().item()
 
 
-        return action
+        return action, aprob
 
     def reset(self):
         """ Resets the agent to inital state """
@@ -71,5 +71,12 @@ class Agent(object):
         self.optimizer.zero_grad()
 
 
+    def store_outcome(self, observation, action_output, action_taken, reward):
+        dist = torch.distributions.Categorical(action_output)
+        action_taken = torch.Tensor([action_taken]).to(self.train_device)
+        log_action_prob = -dist.log_prob(action_taken)
     
 
+        self.observations.append(observation)
+        self.actions.append(log_action_prob)
+        self.rewards.append(torch.Tensor([reward]))

@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 
 policy = Policy(3)
-
+epsilon = 
 
 class Agent(object):
     def __init__(self, env, player_id=1):
@@ -32,7 +32,7 @@ class Agent(object):
         return self.name
 
 
-    def get_action(self, observation, ob=None):
+    def get_action(self, observation, ob=None, epsilon):
         """ Returns the next action of the agent """
         #player = self.env.player1 if self.player_id == 1 else self.env.player2
         #action = self.env.MOVE_UP
@@ -41,8 +41,13 @@ class Agent(object):
         aprob = self.policy.forward()
         m = Categorical(probs)
 
-        action = m.sample().item()
-
+        # Stochastic exploration
+        #action = m.sample().item()
+        # Epsilon_greedy exploration
+        if np.random.random() <=epsilon:
+            action = int(np.random.random()*3)
+        else:
+            action = torch.argmax(aprob)
 
         return action, aprob
 

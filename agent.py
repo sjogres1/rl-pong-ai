@@ -67,9 +67,3 @@ class Agent(object):
         self.optimizer.zero_grad()
 
 
-
-
-def update_policy(self):
-    self.optimizer.step()
-    self.optimizer.zero_grad()
->>>>>>> 746516660f6d4a580d0397d581d81b86368e0fce

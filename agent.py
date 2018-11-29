@@ -41,4 +41,20 @@ class Agent(object):
         # return
 
 
+def episode_finished(self, episode_finished):
+    all_actions = torch.stack(self.actions, dim=0).to(self.train_device).squeeze(-1)
+    all_rewards = torch.stack(self.rewards, dim=0).to(self.train_device).squeeze(-1)
+    self.observations, self.actions, self.rewards = [], [], []
+    discounted_rewards = discount_rewards(all_rewards, self.gamma)
+    discounted_rewards -= torch.mean(discounted_rewards)
+    discounted_rewards /= torch.std(discounted_rewards)
 
+    all_actions = all_actions * discounted_rewards
+    loss = torch.sum(weighted_probs)
+    loss.backward()
+
+    self.update_policy()
+
+def update_policy(self):
+    self.optimizer.step()
+    self.optimizer.zero_grad()

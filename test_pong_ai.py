@@ -28,8 +28,9 @@ env.set_names(player.get_name(), opponent.get_name())
 
 for i in range(0,episodes):
     done = False
+    observation = env.reset()
     while not done:
-        action1 = player.get_action()
+        action1 = player.get_action(observation[0])
         action2 = opponent.get_action()
         (ob1, ob2), (rew1, rew2), done, info = env.step((action1, action2))
         if not args.headless:

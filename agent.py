@@ -1,7 +1,7 @@
 """ Our Agent that needs to beat the SImpleAI """
 from pong import Pong
 from policy import Policy
-
+from torch.distributions import Categorical
 
 policy = Policy(3)
 
@@ -29,8 +29,8 @@ class Agent(object):
 
     def get_action(self, ob=None):
         """ Returns the next action of the agent"""
-        player = self.env.player1 if self.player_id == 1 else self.env.player2
-        action = self.env.MOVE_UP
+        #player = self.env.player1 if self.player_id == 1 else self.env.player2
+        #action = self.env.MOVE_UP
 
 
         return action
@@ -41,20 +41,23 @@ class Agent(object):
         # return
 
 
-def episode_finished(self, episode_finished):
-    all_actions = torch.stack(self.actions, dim=0).to(self.train_device).squeeze(-1)
-    all_rewards = torch.stack(self.rewards, dim=0).to(self.train_device).squeeze(-1)
-    self.observations, self.actions, self.rewards = [], [], []
-    discounted_rewards = discount_rewards(all_rewards, self.gamma)
-    discounted_rewards -= torch.mean(discounted_rewards)
-    discounted_rewards /= torch.std(discounted_rewards)
+    def episode_finished(self, episode_finished):
+        all_actions = torch.stack(self.actions, dim=0).to(self.train_device).squeeze(-1)
+        all_rewards = torch.stack(self.rewards, dim=0).to(self.train_device).squeeze(-1)
+        self.observations, self.actions, self.rewards = [], [], []
+        discounted_rewards = discount_rewards(all_rewards, self.gamma)
+        discounted_rewards -= torch.mean(discounted_rewards)
+        discounted_rewards /= torch.std(discounted_rewards)
 
-    all_actions = all_actions * discounted_rewards
-    loss = torch.sum(weighted_probs)
-    loss.backward()
+        all_actions = all_actions * discounted_rewards
+        loss = torch.sum(weighted_probs)
+        loss.backward()
 
-    self.update_policy()
+        self.update_policy()
 
-def update_policy(self):
-    self.optimizer.step()
-    self.optimizer.zero_grad()
+    def update_policy(self):
+        self.optimizer.step()
+        self.optimizer.zero_grad()
+
+
+

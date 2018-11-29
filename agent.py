@@ -34,10 +34,14 @@ class Agent(object):
 
     def get_action(self, observation, ob=None):
         """ Returns the next action of the agent """
-        player = self.env.player1 if self.player_id == 1 else self.env.player2
-        action = self.env.MOVE_UP
-        self.policy.preprocess(observation)
+        #player = self.env.player1 if self.player_id == 1 else self.env.player2
+        #action = self.env.MOVE_UP
+        #self.policy.preprocess(observation)
+        x = torch.from_numpy(observation).float().to(self.train_device)
+        aprob = self.policy.forward()
+        m = Categorical(probs)
 
+        action = m.sample()
 
 
         return action
@@ -66,4 +70,6 @@ class Agent(object):
         self.optimizer.step()
         self.optimizer.zero_grad()
 
+
+    
 

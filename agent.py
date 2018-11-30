@@ -45,8 +45,7 @@ class Agent(object):
         return self.name
 
     def update_epsilon(self, episode_num):
-        print(episode_num)
-        epsilon = self.a/(self.a + episode_num)
+        epsilon = self.a/(self.a + (episode_num/100))
         if epsilon < 0.01:
             epsilon = 0.01
         

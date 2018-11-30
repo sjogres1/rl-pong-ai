@@ -29,12 +29,12 @@ def test(episodes, agent):
             action1, _ = player.get_action(ob1, ep, evaluation=True)
             action2 = opponent.get_action()
             
-            (ob1, ob2), (rew1, rew2), done, info = env.step((action1, action2))
+            (ob1, ob2), (rew1, _), done, info = env.step((action1, action2))
             
             # New reward function
             env.render()
 
-            test_reward += reward
+            test_reward += rew1
             test_len += 1
     print("Average test reward:", test_reward/episodes,
           "episode length:", test_len/episodes)

@@ -22,23 +22,14 @@ def plot(observation):
     plt.show()
 
 
-def save_model_run(player, env_name="Pong"):
-    model_file = "%s_params_run.mdl" % env_name
+def save_model_final(player):
+    model_file = "Pong_params.mdl"
     i = 1
     while os.path.isfile(model_file):
-        model_file = "%s_params_run%s.mdl" % env_name, i
-
+        model_file = "Pong_params%s.mdl" % i
     torch.save(player.policy.state_dict(), model_file)
-    print("Model saved to", model_file)
+    print("Model saved to: ", model_file)
 
-
-def save_model_final(player, env_name="Pong"):
-    model_file = "%s_params.mdl" % env_name
-    i = 1
-    while os.path.isfile(model_file):
-        model_file = "%s_params%s.mdl" % env_name, i
-
-    pass
 
 env = Pong(headless=args.headless)
 episodes = 10
@@ -50,7 +41,7 @@ player = Agent(env, player_id)
 
 env.set_names(player.get_name(), opponent.get_name())
 
-for i in range(0, episodes):
+for episode_num in range(0, episodes):
     reward_sum, timesteps = 0, 0
     done = False
     # Reset the environment and observe initial states for both players
@@ -58,7 +49,7 @@ for i in range(0, episodes):
     while not done:
 
         # Get actions for both agents
-        action1, aprob = player.get_action(ob1, episodes)
+        action1, aprob = player.get_action(ob1, episode_num)
         action2 = opponent.get_action()
         # Save previous observation for our player
         prev_ob1 = ob1
@@ -82,8 +73,9 @@ for i in range(0, episodes):
             #plot(ob1) # plot the reset observation
             print("episode {} over, reward: {} \t({} timesteps)".format(i, reward_sum, timesteps))
 
-    player.episode_finished()
+    player.episode_finished(episode_num)
 
+save_model_final(player)
 
 # Needs to be called in the end to shut down pygame
 env.end()

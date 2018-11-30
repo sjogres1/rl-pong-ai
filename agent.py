@@ -23,14 +23,16 @@ class Agent(object):
     def __init__(self, env, player_id=1):
         self.env = env
         self.player_id = player_id
-        self.action_space = [self.env.MOVE_UP, self.env.MOVE_DOWN, self.env.STAY]
+        self.action_space = [self.env.STAY, self.env.MOVE_UP, self.env.MOVE_DOWN]
         self.action_space_dim = len(self.action_space)
         self.name = "uber_AI"
         self.train_device = "cpu"
         self.policy = policy.to(self.train_device)
         self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=5e-3)
-        self.batch_size = 3 # Should this be one and where should we use it
+        # self.batch_size = 3 # Should this be one and where should we use it
         self.gamma = 0.99
+        self.epsilon = 1.0
+        self.a = 1
         self.observations = []
         self.actions = []
         self.rewards = []
@@ -40,11 +42,14 @@ class Agent(object):
         """ Returns name of the agent """
         return self.name
 
-    def get_action(self, observation, epsilon, ob=None):
+    def update_epsilon(self, episode_num):
+        epsilon = self.a/(self.a + episode_num)
+        if epsilon < 0.01:
+            epsilon = 0.01
+        self.epsilon = epsilon
+
+    def get_action(self, observation, episodes):
         """ Returns the next action of the agent """
-        #player = self.env.player1 if self.player_id == 1 else self.env.player2
-        #action = self.env.MOVE_UP
-        #self.policy.preprocess(observation)
 
         x = torch.from_numpy(self.preprocess(observation)).float().to(self.train_device)
         aprob = self.policy.forward(x)
@@ -54,21 +59,22 @@ class Agent(object):
         #action = m.sample().item()
         
         # Epsilon_greedy exploration
-        if np.random.random() <= epsilon:
+        if np.random.random() <= self.epsilon:
             action = int(np.random.random()*3)
         else:
-            action = torch.argmax(aprob)
+            action = torch.argmax(m.sample())
+        
+        # Update epsilon value
+        self.update_epsilon(episodes)
 
         return action, aprob
 
     def reset(self):
-        self.env.reset()
         """ Resets the agent to inital state """
-        raise NotImplementedError("Implementoi tämä, vitun perse")
-        # return
+        return self.env.reset()
 
 
-    def episode_finished(self, episode_finished):
+    def episode_finished(self):
         all_actions = torch.stack(self.actions, dim=0).to(self.train_device).squeeze(-1)
         all_rewards = torch.stack(self.rewards, dim=0).to(self.train_device).squeeze(-1)
         self.observations, self.actions, self.rewards = [], [], []
@@ -76,7 +82,7 @@ class Agent(object):
         discounted_rewards -= torch.mean(discounted_rewards)
         discounted_rewards /= torch.std(discounted_rewards)
 
-        all_actions = all_actions * discounted_rewards
+        weighted_probs = all_actions * discounted_rewards
         loss = torch.sum(weighted_probs)
         loss.backward()
 
@@ -92,28 +98,23 @@ class Agent(object):
         action_taken = torch.Tensor([action_taken]).to(self.train_device)
         log_action_prob = -dist.log_prob(action_taken)
     
-
         self.observations.append(observation)
         self.actions.append(log_action_prob)
         self.rewards.append(torch.Tensor([reward]))
 
+
     def to_tensor(self, x):
         x = np.array(x)
-        # print(x.shape)
         x = x.reshape(-1, 1, 105, 100)
-        # print(x.shape)
-        # x = np.transpose(x)
-        # x = torch.from_numpy(x).float().cpu()
         return x
+
 
     def preprocess(self, image):
         # Ball 5x5px, paddle 20x5px
-        # Remove colors
+        # Remove colors, convert to black and white (0,1)
         image = image[:,:,0] + image[:,:,1] + image[:,:,2]
         image[image !=0 ] = 1
-        # Downsample
-        # should we compress image twice more?
-        # do not compress more, maybe less
+        # Downsample by 2 
         image = image[::2,::2]
         return self.to_tensor(image)
 

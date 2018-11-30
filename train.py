@@ -1,3 +1,4 @@
+import os
 from pong import Pong
 import matplotlib.pyplot as plt
 from random import randint
@@ -6,6 +7,7 @@ import numpy as np
 from simple_ai import PongAi
 from agent import Agent
 import argparse
+import torch
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--headless", action="store_true",
@@ -20,14 +22,26 @@ def plot(observation):
     plt.show()
 
 
-def calculate_epsilon(a, episode_num):
-    epsilon = a/(a + episode_num)
+def save_model_run(player, env_name="Pong"):
+    model_file = "%s_params_run.mdl" % env_name
+    i = 1
+    while os.path.isfile(model_file):
+        model_file = "%s_params_run%s.mdl" % env_name, i
 
-    return epsilon
+    torch.save(player.policy.state_dict(), model_file)
+    print("Model saved to", model_file)
+
+
+def save_model_final(player, env_name="Pong"):
+    model_file = "%s_params.mdl" % env_name
+    i = 1
+    while os.path.isfile(model_file):
+        model_file = "%s_params%s.mdl" % env_name, i
+
+    pass
 
 env = Pong(headless=args.headless)
 episodes = 10
-epsilon = 1
 
 player_id = 1
 opponent_id = 3 - player_id
@@ -44,7 +58,7 @@ for i in range(0, episodes):
     while not done:
 
         # Get actions for both agents
-        action1, aprob = player.get_action(ob1, epsilon)
+        action1, aprob = player.get_action(ob1, episodes)
         action2 = opponent.get_action()
         # Save previous observation for our player
         prev_ob1 = ob1
@@ -66,9 +80,9 @@ for i in range(0, episodes):
             # ob1.tofile('observation.txt', ';')
             #observation = env.reset()
             #plot(ob1) # plot the reset observation
-            print("episode {} over, reward: {} (<70)".format(i, reward_sum, timesteps))
+            print("episode {} over, reward: {} \t({} timesteps)".format(i, reward_sum, timesteps))
 
-    epsilon = calculate_epsilon(epsilon, episodes)
+    player.episode_finished()
 
 
 # Needs to be called in the end to shut down pygame

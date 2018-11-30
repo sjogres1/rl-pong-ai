@@ -27,6 +27,7 @@ def save_model_final(player):
     i = 1
     while os.path.isfile(model_file):
         model_file = "Pong_params%s.mdl" % i
+        i += 1
     torch.save(player.policy.state_dict(), model_file)
     print("Model saved to: ", model_file)
 

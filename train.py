@@ -15,8 +15,6 @@ parser.add_argument("--headless", action="store_true",
 args = parser.parse_args()
 
 
-
-
 def plot(observation):
     plt.imshow(observation/255)
     plt.show()
@@ -33,7 +31,7 @@ def save_model_final(player):
 
 
 env = Pong(headless=args.headless)
-episodes = 1000
+episodes = 100
 
 player_id = 1
 opponent_id = 3 - player_id
@@ -41,6 +39,9 @@ opponent = PongAi(env, opponent_id)
 player = Agent(env, player_id)
 
 env.set_names(player.get_name(), opponent.get_name())
+
+reward_history, timestep_history = [], []
+average_reward_history = []
 
 try:
     for episode_num in range(0, episodes):
@@ -75,12 +76,38 @@ try:
                 #plot(ob1) # plot the reset observation
                 print("episode {} over, reward: {} \t({} timesteps)".format(episode_num, reward_sum, timesteps))
 
+        # Bookkeeping (mainly for generating plots)
+        reward_history.append(reward_sum)
+        timestep_history.append(timesteps)
+        if episode_num > 100:
+            avg = np.mean(reward_history[-100:])
+        else:
+            avg = np.mean(reward_history)
+        average_reward_history.append(avg)
+
+        # Run the episode finished protocol
         player.episode_finished(episode_num)
+
+    # Save model after training
     save_model_final(player)
-    
+    # Training is finished - plot rewards
+    plt.plot(reward_history)
+    plt.plot(average_reward_history)
+    plt.legend(["Reward", "100-episode average"])
+    # plt.title("Reward history (sig=%f, net 18)" % agent.policy.sigma.item())
+    plt.show()
+    print("Training finished.")
+
 except KeyboardInterrupt:
     print("Interrupted!")
     save_model_final(player)
+    # Training is finished - plot rewards
+    plt.plot(reward_history)
+    plt.plot(average_reward_history)
+    plt.legend(["Reward", "100-episode average"])
+    # plt.title("Reward history (sig=%f, net 18)" % agent.policy.sigma.item())
+    plt.show()
+    print("Training finished.")
 
 # Needs to be called in the end to shut down pygame
 env.end()

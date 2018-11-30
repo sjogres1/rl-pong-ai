@@ -43,9 +43,11 @@ class Agent(object):
         return self.name
 
     def update_epsilon(self, episode_num):
+        print(episode_num)
         epsilon = self.a/(self.a + episode_num)
         if epsilon < 0.01:
             epsilon = 0.01
+        
         self.epsilon = epsilon
 
     def get_action(self, observation, episodes):
@@ -55,14 +57,16 @@ class Agent(object):
         aprob = self.policy.forward(x)
         m = Categorical(aprob)
 
-        # Stochastic exploration
+        # Stochastic exploration, we can try this at some point
         #action = m.sample().item()
         
         # Epsilon_greedy exploration
         if np.random.random() <= self.epsilon:
             action = int(np.random.random()*3)
+            #print(action)
         else:
-            action = torch.argmax(m.sample())
+            action = torch.argmax(aprob).item()
+            #print(action)
         
         # Update epsilon value
         self.update_epsilon(episodes)

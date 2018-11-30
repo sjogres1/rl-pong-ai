@@ -38,6 +38,8 @@ class Agent(object):
         self.observations = []
         self.actions = []
         self.rewards = []
+        self.grid_count = 0
+        self.grid_action = None
 
 
     def get_name(self):
@@ -61,9 +63,22 @@ class Agent(object):
         # Stochastic exploration, we can try this at some point
         #action = m.sample().item()
         
+
+        # Greedy exploration (Jagusta & Zaguero magic)
+        # if there is exploration, explores on the same direction 5 steps
+
+        if self.grid_count == 5:
+            self.grid_action = None
+            self.grid_count = 0
+        
+        if self.grid_action:
+            self.grid_count += 1
+            return self.grid_action, aprob
+
         # Epsilon_greedy exploration
         if np.random.random() <= self.epsilon:
             action = int(np.random.random()*3)
+            self.grid_action = action
             #print(action)
         else:
             action = torch.argmax(aprob).item()

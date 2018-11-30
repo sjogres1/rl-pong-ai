@@ -23,6 +23,7 @@ def plot(observation):
 def calculate_epsilon(a, episode_num):
     epsilon = a/(a + episode_num)
 
+    return epsilon
 
 env = Pong(headless=args.headless)
 episodes = 10
@@ -55,6 +56,9 @@ for i in range(0, episodes):
         # Store action's outcome (so that the agent can improve its policy)
         player.store_outcome(prev_ob1, aprob, action1, rew1)
         
+        # Store total episode reward
+        timesteps += 1
+        reward_sum += rew1
 
         if not args.headless:
             env.render()
@@ -62,13 +66,10 @@ for i in range(0, episodes):
             # ob1.tofile('observation.txt', ';')
             #observation = env.reset()
             #plot(ob1) # plot the reset observation
-            print("episode {} over".format(i))
+            print("episode {} over, reward: {} (<70)".format(i, reward_sum, timesteps))
 
     epsilon = calculate_epsilon(epsilon, episodes)
 
-    # Store total episode reward
-    reward_sum += reward
-    timesteps +=1
 
 # Needs to be called in the end to shut down pygame
 env.end()

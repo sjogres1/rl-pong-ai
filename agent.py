@@ -54,7 +54,7 @@ class Agent(object):
         #action = m.sample().item()
         
         # Epsilon_greedy exploration
-        if np.random.random() <=epsilon:
+        if np.random.random() <= epsilon:
             action = int(np.random.random()*3)
         else:
             action = torch.argmax(aprob)
@@ -62,6 +62,7 @@ class Agent(object):
         return action, aprob
 
     def reset(self):
+        self.env.reset()
         """ Resets the agent to inital state """
         raise NotImplementedError("Implementoi tämä, vitun perse")
         # return

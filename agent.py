@@ -92,7 +92,7 @@ class Agent(object):
 
         self.update_policy()
 
-        if episode_num % 5 == 0:
+        if episode_num % 100 == 0:
             self.save_model_run()
 
     def update_policy(self):
@@ -130,6 +130,7 @@ class Agent(object):
         i = 1
         while os.path.isfile(model_file):
             model_file = "Pong_params_run%s.mdl" % i
+            i += 1
         return model_file
 
     def save_model_run(self):

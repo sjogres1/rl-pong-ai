@@ -1,4 +1,5 @@
 """ Our Agent that needs to beat the SImpleAI """
+import os
 from pong import Pong
 from policy import Policy
 from torch.distributions import Categorical
@@ -26,6 +27,7 @@ class Agent(object):
         self.action_space = [self.env.STAY, self.env.MOVE_UP, self.env.MOVE_DOWN]
         self.action_space_dim = len(self.action_space)
         self.name = "uber_AI"
+        self.model_file = self.init_run_model_file_name()
         self.train_device = "cpu"
         self.policy = policy.to(self.train_device)
         self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=5e-3)
@@ -78,7 +80,7 @@ class Agent(object):
         return self.env.reset()
 
 
-    def episode_finished(self):
+    def episode_finished(self, episode_num):
         all_actions = torch.stack(self.actions, dim=0).to(self.train_device).squeeze(-1)
         all_rewards = torch.stack(self.rewards, dim=0).to(self.train_device).squeeze(-1)
         self.observations, self.actions, self.rewards = [], [], []
@@ -91,6 +93,9 @@ class Agent(object):
         loss.backward()
 
         self.update_policy()
+
+        if episode_num % 5 == 0:
+            self.save_model_run()
 
     def update_policy(self):
         self.optimizer.step()
@@ -121,4 +126,15 @@ class Agent(object):
         # Downsample by 2 
         image = image[::2,::2]
         return self.to_tensor(image)
+
+    def init_run_model_file_name(self,):
+        model_file = "Pong_params_run.mdl"
+        i = 1
+        while os.path.isfile(model_file):
+            model_file = "Pong_params_run%s.mdl" % i
+        return model_file
+
+    def save_model_run(self):
+        torch.save(self.policy.state_dict(), self.model_file)
+        print("Model saved to: ", self.model_file)
 

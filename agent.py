@@ -8,8 +8,6 @@ import torch.nn.functional as F
 import numpy as np
 
 
-policy = Policy(3) 
-
 
 def discount_rewards(r, gamma):
     discounted_r = torch.zeros_like(r)
@@ -22,6 +20,7 @@ def discount_rewards(r, gamma):
 
 class Agent(object):
     def __init__(self, env, player_id=1):
+        policy = Policy(3)
         self.env = env
         self.player_id = player_id
         self.action_space = [self.env.STAY, self.env.MOVE_UP, self.env.MOVE_DOWN]

@@ -27,6 +27,7 @@ def save_model_final(player):
     i = 1
     while os.path.isfile(model_file):
         model_file = "Pong_params%s.mdl" % i
+        i += 1
     torch.save(player.policy.state_dict(), model_file)
     print("Model saved to: ", model_file)
 
@@ -71,7 +72,7 @@ for episode_num in range(0, episodes):
             # ob1.tofile('observation.txt', ';')
             #observation = env.reset()
             #plot(ob1) # plot the reset observation
-            print("episode {} over, reward: {} \t({} timesteps)".format(i, reward_sum, timesteps))
+            print("episode {} over, reward: {} \t({} timesteps)".format(episode_num, reward_sum, timesteps))
 
     player.episode_finished(episode_num)
 

@@ -8,6 +8,16 @@ import torch.nn.functional as F
 
 policy = Policy(3) 
 
+
+def discount_rewards(r, gamma):
+    discounted_r = torch.zeros_like(r)
+    running_add = 0
+    for t in reversed(range(0, r.size(-1))):
+        running_add = running_add * gamma + r[t]
+        discounted_r[t] = running_add
+    return discounted_r
+
+
 class Agent(object):
     def __init__(self, env, player_id=1):
         self.env = env
@@ -18,7 +28,7 @@ class Agent(object):
         self.train_device = "cpu"
         self.policy = policy.to(self.train_device)
         self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=5e-3)
-        # self.batch_size = 3
+        self.batch_size = 3 # Should this be one and where should we use it
         self.gamma = 0.99
         self.observations = []
         self.actions = []
@@ -36,11 +46,12 @@ class Agent(object):
         #self.policy.preprocess(observation)
 
         x = torch.from_numpy(self.preprocess(observation)).float().to(self.train_device)
-        aprob = self.policy.forward()
+        aprob = self.policy.forward(x)
         m = Categorical(probs)
 
         # Stochastic exploration
         #action = m.sample().item()
+        
         # Epsilon_greedy exploration
         if np.random.random() <=epsilon:
             action = int(np.random.random()*3)

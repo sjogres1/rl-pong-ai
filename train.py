@@ -71,7 +71,7 @@ for episode_num in range(0, episodes):
             # ob1.tofile('observation.txt', ';')
             #observation = env.reset()
             #plot(ob1) # plot the reset observation
-            print("episode {} over, reward: {} \t({} timesteps)".format(i, reward_sum, timesteps))
+            print("episode {} over, reward: {} \t({} timesteps)".format(episode_num, reward_sum, timesteps))
 
     player.episode_finished(episode_num)
 

@@ -6,9 +6,7 @@ import torch
 import torch.nn.functional as F
 
 
-
-policy = Policy(3)
-epsilon = 
+policy = Policy(3) 
 
 class Agent(object):
     def __init__(self, env, player_id=1):
@@ -31,13 +29,13 @@ class Agent(object):
         """ Returns name of the agent """
         return self.name
 
-
-    def get_action(self, observation, ob=None, epsilon):
+    def get_action(self, observation, epsilon, ob=None):
         """ Returns the next action of the agent """
         #player = self.env.player1 if self.player_id == 1 else self.env.player2
         #action = self.env.MOVE_UP
         #self.policy.preprocess(observation)
-        x = torch.from_numpy(observation).float().to(self.train_device)
+
+        x = torch.from_numpy(self.preprocess(observation)).float().to(self.train_device)
         aprob = self.policy.forward()
         m = Categorical(probs)
 
@@ -85,3 +83,14 @@ class Agent(object):
         self.observations.append(observation)
         self.actions.append(log_action_prob)
         self.rewards.append(torch.Tensor([reward]))
+
+    def preprocess(self, image):
+        # Ball 5x5px, paddle 20x5px
+        # Remove colors
+        image = image[:,:,0] + image[:,:,1] + image[:,:,2]
+        image[image !=0 ] = 1
+        # Downsample
+        # should we compress image twice more?
+        image = image[::2,::2]
+        return image
+

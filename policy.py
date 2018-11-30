@@ -30,16 +30,6 @@ class Policy(torch.nn.Module):
         return F.softmax(x, dim=-1)
 
 
-    def preprocess(self, image):
-        # Ball 5x5px, paddle 20x5px
-        # Remove colors
-        image = image[:,:,0] + image[:,:,1] + image[:,:,2]
-        image[image !=0 ] = 1
-        # Downsample
-        # should we compress image twice more?
-        image = image[::2,::2]
-        self.observation = image
-
 
 
 

@@ -4,6 +4,7 @@ from policy import Policy
 from torch.distributions import Categorical
 import torch
 import torch.nn.functional as F
+import numpy as np
 
 
 policy = Policy(3) 
@@ -47,7 +48,7 @@ class Agent(object):
 
         x = torch.from_numpy(self.preprocess(observation)).float().to(self.train_device)
         aprob = self.policy.forward(x)
-        m = Categorical(probs)
+        m = Categorical(aprob)
 
         # Stochastic exploration
         #action = m.sample().item()
@@ -95,6 +96,15 @@ class Agent(object):
         self.actions.append(log_action_prob)
         self.rewards.append(torch.Tensor([reward]))
 
+    def to_tensor(self, x):
+        x = np.array(x)
+        # print(x.shape)
+        x = x.reshape(-1, 1, 105, 100)
+        # print(x.shape)
+        # x = np.transpose(x)
+        # x = torch.from_numpy(x).float().cpu()
+        return x
+
     def preprocess(self, image):
         # Ball 5x5px, paddle 20x5px
         # Remove colors
@@ -102,6 +112,7 @@ class Agent(object):
         image[image !=0 ] = 1
         # Downsample
         # should we compress image twice more?
+        # do not compress more, maybe less
         image = image[::2,::2]
-        return image
+        return self.to_tensor(image)
 

@@ -13,6 +13,8 @@ parser.add_argument("--headless", action="store_true",
 args = parser.parse_args()
 
 
+
+
 def plot(observation):
     plt.imshow(observation/255)
     plt.show()
@@ -51,7 +53,7 @@ for i in range(0, episodes):
        
 
         # Store action's outcome (so that the agent can improve its policy)
-        agent.store_outcome(prev_ob1, aprob, action1, rew1)
+        player.store_outcome(prev_ob1, aprob, action1, rew1)
         
 
         if not args.headless:
@@ -62,7 +64,7 @@ for i in range(0, episodes):
             #plot(ob1) # plot the reset observation
             print("episode {} over".format(i))
 
-    epsilon = calculate_epsilon(epsilon, episode_num)
+    epsilon = calculate_epsilon(epsilon, episodes)
 
     # Store total episode reward
     reward_sum += reward

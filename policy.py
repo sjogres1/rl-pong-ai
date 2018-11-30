@@ -9,11 +9,12 @@ class Policy(torch.nn.Module):
         # Create convolutional neural network
         super().__init__()
         # How about the parameters in the network?
-        self.conv_1 = torch.nn.Conv2d(4, 32, kernel_size=8, stride=4)
+        # stride could be betweeen 2-3
+        self.conv_1 = torch.nn.Conv2d(1, 32, kernel_size=8, stride=4)
         self.conv_2 = torch.nn.Conv2d(32, 64, kernel_size=4, stride=2)
         self.conv_3 = torch.nn.Conv2d(64, 64, kernel_size=3, stride=1)
         # Create neural network
-        self.lin1 = torch.nn.Linear(100, 784)
+        self.lin1 = torch.nn.Linear(5184, 784)
         self.lin2 = torch.nn.Linear(784, action_space)
         self.init_weights()
 
@@ -25,10 +26,16 @@ class Policy(torch.nn.Module):
 
     def forward(self, x):
         # Crashes here because input is 4 dimensional and should be 2-dimensional
+        #print(x.shape)
         x = F.relu(self.conv_1(x))
+        #print(x.shape)
         x = F.relu(self.conv_2(x))
+        #print(x.shape)
         x = F.relu(self.conv_3(x))
-        x = F.relu(self.lin1(x.view(x.size(0), -1)))
+        #print(x.shape)
+        x = x.view(-1, 5184)
+        #print(x.shape)
+        x = F.relu(self.lin1(x))
         x = self.lin2(x)
         return F.softmax(x, dim=-1)
 

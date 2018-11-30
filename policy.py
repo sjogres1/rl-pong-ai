@@ -6,9 +6,9 @@ import torch.nn.functional as F
 
 class Policy(torch.nn.Module):
     def __init__(self, action_space):
-        # Create convolutional neural network
+       
         super().__init__()
-        # How about the parameters in the network?
+        # Create convolutional neural network
         # stride could be betweeen 2-3
         self.conv_1 = torch.nn.Conv2d(1, 32, kernel_size=8, stride=4)
         self.conv_2 = torch.nn.Conv2d(32, 64, kernel_size=4, stride=2)
@@ -25,7 +25,7 @@ class Policy(torch.nn.Module):
                 torch.nn.init.zeros_(m.bias)
 
     def forward(self, x):
-        # Run preprosecced image trought concolutional nn and relu functions
+        # Run preprosecced image trought convolutional nn and relu functions
         x = F.relu(self.conv_1(x))
         x = F.relu(self.conv_2(x))
         x = F.relu(self.conv_3(x))
@@ -33,10 +33,14 @@ class Policy(torch.nn.Module):
         # Relu layers return Tensor size of [1, 64, 9, 9]
         # Reshape the Tensor to match fit linear nn
         x = x.view(-1, 5184)
+          # Going through linear neural network layer with relu function
         x = F.relu(self.lin1(x))
+
+        #Output of the last neural network that gives action (3 actions in total)
         x = self.lin2(x)
 
-        return F.softmax(x, dim=-1)
+        # Softmax returns a probality of each action
+        return F.softmax(x, dim=-1) # should this be 1?
 
 
 

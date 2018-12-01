@@ -62,6 +62,8 @@ class Agent(object):
         x = torch.from_numpy(self.preprocess(observation)).float().to(self.train_device)
         aprob = self.policy.forward(x)
 
+        # Printing action probalities that softmax returns
+        print(aprob)
         # Stochastic exploration, we can try this at some point
         #m = Categorical(aprob)
         #action = m.sample().item()

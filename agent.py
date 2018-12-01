@@ -6,6 +6,7 @@ from torch.distributions import Categorical
 import torch
 import torch.nn.functional as F
 import numpy as np
+import matplotlib.pyplot as plt
 
 
     # Discounted reward calculation
@@ -27,8 +28,11 @@ class Agent(object):
         self.model_file = self.init_run_model_file_name()
         self.train_device = "cpu"
         self.policy = policy.to(self.train_device)
+        # What should the learning rate lr be?
         self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=5e-3)
-        self.batch_size = 1 # Should this be one or maybe 2-5?
+        # Should this be one or maybe 2-5?
+        self.batch_size = 1 
+        # What should the gamma be?
         self.gamma = 0.99
         self.epsilon = 1.0
         self.a = 1
@@ -44,6 +48,7 @@ class Agent(object):
         return self.name
 
     def update_epsilon(self, episode_num):
+        # Update epsilon. Is the epsilon decreasing too fast?
         epsilon = self.a/(self.a + (episode_num/100))
         if epsilon < 0.01:
             epsilon = 0.01
@@ -53,6 +58,7 @@ class Agent(object):
     def get_action(self, observation, episodes, evaluation=False):
         """ Returns the next action of the agent """
 
+        # Is this correct?
         x = torch.from_numpy(self.preprocess(observation)).float().to(self.train_device)
         aprob = self.policy.forward(x)
 
@@ -60,7 +66,6 @@ class Agent(object):
         #m = Categorical(aprob)
         #action = m.sample().item()
         
-
         # Greedy exploration (Jagusta & Zaguero magic)
         # if there is exploration, explores on the same direction 5 steps
 
@@ -68,7 +73,7 @@ class Agent(object):
             self.grid_action = None
             self.grid_count = 0
         
-        if self.grid_action:
+        if self.grid_action in [0, 1, 2]:
             self.grid_count += 1
             return self.grid_action, aprob
 
@@ -81,9 +86,6 @@ class Agent(object):
             action = torch.argmax(aprob).item()
             #print(action)
         
-        # Update epsilon value
-        self.update_epsilon(episodes)
-
         return action, aprob
 
     def reset(self):
@@ -102,9 +104,12 @@ class Agent(object):
         # Calculate Policy Gradient values
         weighted_probs = all_actions * discounted_rewards
         loss = torch.sum(weighted_probs)
-        # use backpropagation to weed information backward to neural network
+        # use backpropagation to feed information backward to neural network
         loss.backward()
-        
+
+        # Update epsilon value
+        self.update_epsilon(episode_num)
+
         # Updates policy. In default batch_size update is done after each episode
         if (episode_num+1) % self.batch_size == 0: 
             
@@ -114,12 +119,15 @@ class Agent(object):
             self.save_model_run()
 
     def update_policy(self):
+        # Should these be somewhere else or first zero_grad and then step?
+        # source : https://gist.github.com/nailo2c/09c3fd3a92fe212dea8f97ac5c7a1043
+        # line 99
         self.optimizer.step()
         self.optimizer.zero_grad()
 
 
-    def store_outcome(self, observation, action_output, action_taken, reward):
-        dist = torch.distributions.Categorical(action_output)
+    def store_outcome(self, observation, action_dist, action_taken, reward):
+        dist = torch.distributions.Categorical(action_dist)
         action_taken = torch.Tensor([action_taken]).to(self.train_device)
         # Action probalilities
         log_action_prob = -dist.log_prob(action_taken)
@@ -133,6 +141,7 @@ class Agent(object):
     def to_tensor(self, x):
         x = np.array(x)
         x = x.reshape(-1, 1, 105, 100)
+        # Are width and height wrong way around?
         return x
 
 
@@ -143,6 +152,8 @@ class Agent(object):
         image[image !=0 ] = 1
         # Downsample by 2 
         image = image[::2,::2]
+        #plt.imshow(image)
+        #plt.show()
         return self.to_tensor(image)
 
     def init_run_model_file_name(self,):

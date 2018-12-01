@@ -30,8 +30,9 @@ def save_model_final(player):
     print("Model saved to: ", model_file)
 
 
+# Create environment
 env = Pong(headless=args.headless)
-episodes = 300000
+episodes = 10
 
 player_id = 1
 opponent_id = 3 - player_id
@@ -39,7 +40,7 @@ opponent = PongAi(env, opponent_id)
 player = Agent(env, player_id)
 
 env.set_names(player.get_name(), opponent.get_name())
-
+# Initialize lists
 reward_history, timestep_history = [], []
 average_reward_history = []
 
@@ -85,7 +86,7 @@ try:
             avg = np.mean(reward_history)
         average_reward_history.append(avg)
 
-        # Run the episode finished protocol
+        # Run the episode finished protocol, update policy
         player.episode_finished(episode_num)
 
     # Save model after training

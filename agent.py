@@ -50,7 +50,7 @@ class Agent(object):
         
         self.epsilon = epsilon
 
-    def get_action(self, observation, episodes):
+    def get_action(self, observation, episodes, evaluation=False):
         """ Returns the next action of the agent """
 
         x = torch.from_numpy(self.preprocess(observation)).float().to(self.train_device)
@@ -73,7 +73,7 @@ class Agent(object):
             return self.grid_action, aprob
 
         # Epsilon_greedy exploration
-        if np.random.random() <= self.epsilon:
+        if np.random.random() <= self.epsilon and not evaluation:
             action = int(np.random.random()*3)
             self.grid_action = action
             #print(action)

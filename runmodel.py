@@ -1,14 +1,22 @@
+import argparse
+import torch
+from pong import Pong
+from agent import Agent
+from policy import Policy
+from simple_ai import PongAi
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", "-m", type=str, default=None,
                     help="Model to be tested")
 args = parser.parse_args()
 
-
+policy = Policy(3)
 state_dict = torch.load(args.model)
 policy.load_state_dict(state_dict)
 
 
-env = Pong(headless=args.headless)
+env = Pong(headless=False)
 episodes = 10
 
 player_id = 1
@@ -19,7 +27,7 @@ player = Agent(env, player_id)
 env.set_names(player.get_name(), opponent.get_name())
 
 # Function to test a trained policy
-def test(episodes, agent):
+def test(episodes):
     test_reward, test_len = 0, 0
     for ep in range(episodes):
         done = False
@@ -42,6 +50,6 @@ def test(episodes, agent):
 
 print("Testing...")
 try:
-    test(25, agent)
+    test(25)
 except KeyboardInterrupt:
     print("Testing interrupted.")

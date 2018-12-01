@@ -31,7 +31,7 @@ def save_model_final(player):
 
 
 env = Pong(headless=args.headless)
-episodes = 1000
+episodes = 300000
 
 player_id = 1
 opponent_id = 3 - player_id

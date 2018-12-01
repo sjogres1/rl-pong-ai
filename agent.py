@@ -107,10 +107,10 @@ class Agent(object):
         
         # Updates policy. In default batch_size update is done after each episode
         if (episode_num+1) % self.batch_size == 0: 
-            print("uujee")
+            
             self.update_policy()
 
-        if episode_num % 800 == 0:
+        if episode_num % 4000 == 0:
             self.save_model_run()
 
     def update_policy(self):

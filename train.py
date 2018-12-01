@@ -8,6 +8,7 @@ from simple_ai import PongAi
 from agent import Agent
 import argparse
 import torch
+from datetime import datetime
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--headless", action="store_true",
@@ -29,6 +30,7 @@ def save_model_final(player):
     torch.save(player.policy.state_dict(), model_file)
     print("Model saved to: ", model_file)
 
+start = datetime.now()
 
 # Create environment
 env = Pong(headless=args.headless)
@@ -98,6 +100,7 @@ try:
     # plt.title("Reward history (sig=%f, net 18)" % agent.policy.sigma.item())
     plt.show()
     print("Training finished.")
+    print("Total time used: {}".format(datetime.now() - start))
 
 except KeyboardInterrupt:
     print("Interrupted!")

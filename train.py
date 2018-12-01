@@ -34,7 +34,7 @@ start = datetime.now()
 
 # Create environment
 env = Pong(headless=args.headless)
-episodes = 10
+episodes = 400000
 
 player_id = 1
 opponent_id = 3 - player_id
@@ -73,7 +73,7 @@ try:
 
             if not args.headless:
                 env.render()
-            if done:
+            if done and episode_num % 50 == 0:
                 # ob1.tofile('observation.txt', ';')
                 #observation = env.reset()
                 #plot(ob1) # plot the reset observation

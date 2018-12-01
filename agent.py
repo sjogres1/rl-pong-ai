@@ -62,11 +62,13 @@ class Agent(object):
         x = torch.from_numpy(self.preprocess(observation)).float().to(self.train_device)
         aprob = self.policy.forward(x)
 
-        # Stochastic exploration, we can try this at some point
+        # Printing action probalities that softmax returns
+        #print(aprob)
+        """ Stochastic exploration, we can try this at some point"""
         #m = Categorical(aprob)
         #action = m.sample().item()
         
-        # Greedy exploration (Jagusta & Zaguero magic)
+        """Greedy exploration (Jagusta & Zaguero magic)"""
         # if there is exploration, explores on the same direction 5 steps
 
         if self.grid_count == 5:

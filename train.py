@@ -73,7 +73,7 @@ try:
 
             if not args.headless:
                 env.render()
-            if done and episode_num % 50 == 0:
+            if done: #and episode_num % 50 == 0:
                 # ob1.tofile('observation.txt', ';')
                 #observation = env.reset()
                 #plot(ob1) # plot the reset observation

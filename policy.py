@@ -10,6 +10,7 @@ class Policy(torch.nn.Module):
         super().__init__()
         # Create convolutional neural network
         # stride could be betweeen 2-3
+        # should we change neural network parameters as well?
         self.conv_1 = torch.nn.Conv2d(1, 32, kernel_size=8, stride=4)
         self.conv_2 = torch.nn.Conv2d(32, 64, kernel_size=4, stride=2)
         self.conv_3 = torch.nn.Conv2d(64, 64, kernel_size=3, stride=1)

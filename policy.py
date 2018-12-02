@@ -14,7 +14,7 @@ class Policy(torch.nn.Module):
         self.conv_2 = torch.nn.Conv2d(32, 64, kernel_size=4, stride=2)
         self.conv_3 = torch.nn.Conv2d(64, 64, kernel_size=3, stride=1)
         # Create linear neural networks
-        self.lin1 = torch.nn.Linear(5184, 784)
+        self.lin1 = torch.nn.Linear(5184, 784) # You can try and change hidden layer 200-220
         self.lin2 = torch.nn.Linear(784, action_space)
         self.init_weights()
 

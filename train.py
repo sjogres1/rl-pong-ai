@@ -34,7 +34,7 @@ start = datetime.now()
 
 # Create environment
 env = Pong(headless=args.headless)
-episodes = 400000
+episodes = 990000
 
 player_id = 1
 opponent_id = 3 - player_id

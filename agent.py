@@ -26,11 +26,13 @@ class Agent(object):
         self.player_id = player_id
         self.name = "uber_AI"
         self.model_file = self.init_run_model_file_name()
-        self.train_device = "cpu"
+        self.train_device = "cuda"
         self.policy = policy.to(self.train_device)
-        # What should the learning rate lr be?
+        # What should the learning rate lr be? 1e-3, 1e-4, 1e-5 are used in other places
+        # Could we try to to usem ADAM algorithm?
+        # https://pytorch.org/docs/stable/optim.html
         self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=5e-3)
-        # Should this be one or maybe 2-5?
+        # Should this be one or maybe 4-10? More than 5 can crash, somewhere 100 were used 
         self.batch_size = 1 
         # What should the gamma be?
         self.gamma = 0.99
@@ -117,8 +119,8 @@ class Agent(object):
             
             self.update_policy()
 
-        if episode_num % 4000 == 0:
-            self.save_model_run()
+        #if episode_num % 4000 == 0:
+         #   self.save_model_run()
 
     def update_policy(self):
         # Should these be somewhere else or first zero_grad and then step?

@@ -28,12 +28,12 @@ class Agent(object):
         self.model_file = self.init_run_model_file_name()
         self.train_device = "cuda"
         self.policy = policy.to(self.train_device)
-        # What should the learning rate be? 1e-3, 1e-4, 1e-5 are used in other places
-        # Could we try to to use ADAM algorithm?
+        # What should the learning rate lr be? 1e-3, 1e-4, 1e-5 are used in other places
+        # Could we try to to usem ADAM algorithm?
         # https://pytorch.org/docs/stable/optim.html
-        self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=1e-4) # default 5e-3
+        self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=1e-4) #default 5e-3
         # Should this be one or maybe 4-10? More than 5 can crash, somewhere 100 were used 
-        self.batch_size = 2 
+        self.batch_size = 5 
         # What should the gamma be?
         self.gamma = 0.99
         self.epsilon = 1.0

@@ -26,7 +26,7 @@ class Policy(torch.nn.Module):
                 torch.nn.init.zeros_(m.bias)
 
     def forward(self, x):
-        # Run preprosecced image trought convolutional nn and relu functions
+        # Run preprosecced image trought convolutional nn and activate with relu functions
         x = F.relu(self.conv_1(x))
         x = F.relu(self.conv_2(x))
         x = F.relu(self.conv_3(x))
@@ -37,7 +37,7 @@ class Policy(torch.nn.Module):
           # Going through linear neural network layer with relu function
         x = F.relu(self.lin1(x))
 
-        #Output of the last neural network that gives action (3 actions in total)
+        #Output/activation of the last neural network that gives action (3 actions in total)
         x = self.lin2(x)
 
         # Softmax returns a probality of each action

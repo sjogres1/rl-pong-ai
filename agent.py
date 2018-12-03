@@ -26,14 +26,14 @@ class Agent(object):
         self.player_id = player_id
         self.name = "uber_AI"
         self.model_file = self.init_run_model_file_name()
-        self.train_device = "cpu"
+        self.train_device = "cuda"
         self.policy = policy.to(self.train_device)
         # What should the learning rate be? 1e-3, 1e-4, 1e-5 are used in other places
-        # Try adam after it really works
+        # Try adam after we have a working solution
         self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=1e-4) # default 5e-3
         # Batch size 10-80 is good by Oliver. Takes longer to train when bigger batch size, but learns steadyer and softmax does not overflow
         self.batch_size = 50 
-        # What should the gamma be?
+        # Gamma 0.99 is good.
         self.gamma = 0.99
         self.epsilon = 1.0
         self.a = 1
@@ -49,7 +49,7 @@ class Agent(object):
         return self.name
 
     def update_epsilon(self, episode_num):
-        # Update epsilon. In 1000 episodes it is half of the previous epsilon
+        # Update epsilon. In 1000 episodes it is half of the previous epsilon. Asked from Oliver
         epsilon = self.a/(self.a + (episode_num/1000))
         if epsilon < 0.01:
             epsilon = 0.01
@@ -141,9 +141,10 @@ class Agent(object):
     # Reshape preprosessed image so it goes nicely to neural network 
     def to_tensor(self, x):
         x = np.array(x)
-        x = x.reshape(-1, 1, 100, 105)
+        # Width and height were wrong way around, we changed these with Oliver
+        x = x.reshape(-1, 1, 100, 105) # before (-1,1,100,105)
         #print(x.shape)
-        # Are width and height wrong way around? They were, we changed these with Oliver
+        
         return x
 
 

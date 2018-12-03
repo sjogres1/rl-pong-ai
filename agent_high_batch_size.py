@@ -1,7 +1,7 @@
 """ Our Agent that needs to beat the SImpleAI """
 import os
 from pong import Pong
-from policy import Policy
+from policy_two import Policy
 from torch.distributions import Categorical
 import torch
 import torch.nn.functional as F
@@ -31,9 +31,9 @@ class Agent(object):
         # What should the learning rate lr be? 1e-3, 1e-4, 1e-5 are used in other places
         # Could we try to to usem ADAM algorithm?
         # https://pytorch.org/docs/stable/optim.html
-        self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=1e-3) #default 5e-3
+        self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=1e-4) #default 5e-3
         # Should this be one or maybe 4-10? More than 5 can crash, somewhere 100 were used 
-        self.batch_size = 5 
+        self.batch_size = 10 
         # What should the gamma be?
         self.gamma = 0.99
         self.epsilon = 1.0

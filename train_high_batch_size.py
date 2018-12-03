@@ -22,7 +22,7 @@ def plot(observation):
 
 
 def save_model_final(player):
-    model_file = "Pong_params_high_batch_size.mdl"
+    model_file = "Pong_params_h_b_s_s_h_s_lr.mdl"
     i = 1
     while os.path.isfile(model_file):
         model_file = "Pong_params%s.mdl" % i

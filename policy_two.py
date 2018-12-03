@@ -10,12 +10,12 @@ class Policy(torch.nn.Module):
         super().__init__()
         # Create convolutional neural network
         # stride could be betweeen 2-3
+        # should we change neural network parameters as well?
         self.conv_1 = torch.nn.Conv2d(1, 32, kernel_size=8, stride=4)
         self.conv_2 = torch.nn.Conv2d(32, 64, kernel_size=4, stride=2)
         self.conv_3 = torch.nn.Conv2d(64, 64, kernel_size=3, stride=1)
         # Create linear neural networks
-        self.lin1 = torch.nn.Linear(5184, 784) # Default was 784. Jagusta run one with 200 and one with 784
-        # Maybe put one more layer here, hint from Oliver if still does not work
+        self.lin1 = torch.nn.Linear(5184, 200) # You can try and change hidden layer 200-220
         self.lin2 = torch.nn.Linear(200, action_space)
         self.init_weights()
 
@@ -40,10 +40,7 @@ class Policy(torch.nn.Module):
         #Output/activation of the last neural network that gives action (3 actions in total)
         x = self.lin2(x)
 
-        # Softmax returns a probality of each action.
-
-        # If still does not learn, we can try to normalize the x values before feeding them to softmax
-        
+        # Softmax returns a probality of each action
         return F.softmax(x, dim=-1) # should this be 1?
 
 

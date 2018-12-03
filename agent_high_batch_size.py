@@ -28,13 +28,12 @@ class Agent(object):
         self.model_file = self.init_run_model_file_name()
         self.train_device = "cuda"
         self.policy = policy.to(self.train_device)
-        # What should the learning rate lr be? 1e-3, 1e-4, 1e-5 are used in other places
-        # Could we try to to usem ADAM algorithm?
-        # https://pytorch.org/docs/stable/optim.html
-        self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=1e-4) #default 5e-3
-        # Should this be one or maybe 4-10? More than 5 can crash, somewhere 100 were used 
-        self.batch_size = 10 
-        # What should the gamma be?
+        # Learning rates:  1e-3, 1e-4, 1e-5 are used in other places. 1e-4 is good, but we can also try out 1e-3 and 1e-5
+        # Try adam after we have a working solution
+        self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=1e-4)
+        # Batch size 10-80 is good by Oliver. Takes longer to train when bigger batch size, but learns steadyer and softmax does not overflow
+        self.batch_size = 30 # before was 10, already was progressing a little bit
+        # Gamma 0.99 is good.
         self.gamma = 0.99
         self.epsilon = 1.0
         self.a = 1
@@ -50,8 +49,8 @@ class Agent(object):
         return self.name
 
     def update_epsilon(self, episode_num):
-        # Update epsilon. Is the epsilon decreasing too fast?
-        epsilon = self.a/(self.a + (episode_num/100))
+        # Update epsilon.
+        epsilon = self.a/(self.a + (episode_num/1000))
         if epsilon < 0.01:
             epsilon = 0.01
         
@@ -60,7 +59,7 @@ class Agent(object):
     def get_action(self, observation, episodes, evaluation=False):
         """ Returns the next action of the agent """
 
-        # Is this correct?
+        
         x = torch.from_numpy(self.preprocess(observation)).float().to(self.train_device)
         aprob = self.policy.forward(x)
 
@@ -123,9 +122,7 @@ class Agent(object):
          #   self.save_model_run()
 
     def update_policy(self):
-        # Should these be somewhere else or first zero_grad and then step?
-        # source : https://gist.github.com/nailo2c/09c3fd3a92fe212dea8f97ac5c7a1043
-        # line 99
+        
         self.optimizer.step()
         self.optimizer.zero_grad()
 
@@ -144,8 +141,8 @@ class Agent(object):
     # Reshape preprosessed image so it goes nicely to neural network 
     def to_tensor(self, x):
         x = np.array(x)
-        x = x.reshape(-1, 1, 105, 100)
-        # Are width and height wrong way around?
+        x = x.reshape(-1, 1, 100, 105) # before (-1,1,100,105)
+        
         return x
 
 

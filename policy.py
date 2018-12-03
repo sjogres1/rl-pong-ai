@@ -10,11 +10,12 @@ class Policy(torch.nn.Module):
         super().__init__()
         # Create convolutional neural network
         # stride could be betweeen 2-3
+        # should we change neural network parameters as well?
         self.conv_1 = torch.nn.Conv2d(1, 32, kernel_size=8, stride=4)
         self.conv_2 = torch.nn.Conv2d(32, 64, kernel_size=4, stride=2)
         self.conv_3 = torch.nn.Conv2d(64, 64, kernel_size=3, stride=1)
         # Create linear neural networks
-        self.lin1 = torch.nn.Linear(5184, 784)
+        self.lin1 = torch.nn.Linear(5184, 784) # You can try and change hidden layer 200-220
         self.lin2 = torch.nn.Linear(784, action_space)
         self.init_weights()
 
@@ -25,7 +26,7 @@ class Policy(torch.nn.Module):
                 torch.nn.init.zeros_(m.bias)
 
     def forward(self, x):
-        # Run preprosecced image trought convolutional nn and relu functions
+        # Run preprosecced image trought convolutional nn and activate with relu functions
         x = F.relu(self.conv_1(x))
         x = F.relu(self.conv_2(x))
         x = F.relu(self.conv_3(x))
@@ -36,7 +37,7 @@ class Policy(torch.nn.Module):
           # Going through linear neural network layer with relu function
         x = F.relu(self.lin1(x))
 
-        #Output of the last neural network that gives action (3 actions in total)
+        #Output/activation of the last neural network that gives action (3 actions in total)
         x = self.lin2(x)
 
         # Softmax returns a probality of each action

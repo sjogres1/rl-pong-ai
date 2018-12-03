@@ -26,12 +26,15 @@ class Agent(object):
         self.player_id = player_id
         self.name = "uber_AI"
         self.model_file = self.init_run_model_file_name()
-        self.train_device = "cpu"
+        self.train_device = "cuda"
         self.policy = policy.to(self.train_device)
-        # What should the learning rate lr be?
-        self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=5e-3)
-        # Should this be one or maybe 2-5?
-        self.batch_size = 1 
+        # What should the learning rate be? 1e-3, 1e-4, 1e-5 are used in other places
+        # Could we try to to use ADAM for adaptive gradient descent method?
+        # https://pytorch.org/docs/stable/optim.html
+        # https://blog.paperspace.com/intro-to-optimization-momentum-rmsprop-adam/
+        self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=1e-4) # default 5e-3
+        # Should this be one or maybe 4-10? Pretty sure that somewhere close to 10
+        self.batch_size = 2 
         # What should the gamma be?
         self.gamma = 0.99
         self.epsilon = 1.0
@@ -62,11 +65,13 @@ class Agent(object):
         x = torch.from_numpy(self.preprocess(observation)).float().to(self.train_device)
         aprob = self.policy.forward(x)
 
-        # Stochastic exploration, we can try this at some point
+        # Printing action probalities that softmax returns
+        #print(aprob)
+        """ Stochastic exploration, we can try this at some point"""
         #m = Categorical(aprob)
         #action = m.sample().item()
         
-        # Greedy exploration (Jagusta & Zaguero magic)
+        """Greedy exploration (Jagusta & Zaguero magic)"""
         # if there is exploration, explores on the same direction 5 steps
 
         if self.grid_count == 5:
@@ -115,8 +120,8 @@ class Agent(object):
             
             self.update_policy()
 
-        if episode_num % 4000 == 0:
-            self.save_model_run()
+        #if episode_num % 4000 == 0:
+         #   self.save_model_run()
 
     def update_policy(self):
         # Should these be somewhere else or first zero_grad and then step?

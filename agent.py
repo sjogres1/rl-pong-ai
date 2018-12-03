@@ -29,10 +29,11 @@ class Agent(object):
         self.train_device = "cuda"
         self.policy = policy.to(self.train_device)
         # What should the learning rate be? 1e-3, 1e-4, 1e-5 are used in other places
-        # Could we try to to use ADAM algorithm?
+        # Could we try to to use ADAM for adaptive gradient descent method?
         # https://pytorch.org/docs/stable/optim.html
+        # https://blog.paperspace.com/intro-to-optimization-momentum-rmsprop-adam/
         self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=1e-4) # default 5e-3
-        # Should this be one or maybe 4-10? More than 5 can crash, somewhere 100 were used 
+        # Should this be one or maybe 4-10? Pretty sure that somewhere close to 10
         self.batch_size = 2 
         # What should the gamma be?
         self.gamma = 0.99

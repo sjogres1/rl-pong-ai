@@ -28,11 +28,11 @@ class Agent(object):
         self.model_file = self.init_run_model_file_name()
         self.train_device = "cuda"
         self.policy = policy.to(self.train_device)
-        # What should the learning rate be? 1e-3, 1e-4, 1e-5 are used in other places
+        # Learning rates:  1e-3, 1e-4, 1e-5 are used in other places. 1e-4 is good, but we can also try out 1e-3 and 1e-5
         # Try adam after we have a working solution
-        self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=1e-4) # default 5e-3
+        self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=1e-4)
         # Batch size 10-80 is good by Oliver. Takes longer to train when bigger batch size, but learns steadyer and softmax does not overflow
-        self.batch_size = 50 
+        self.batch_size = 50
         # Gamma 0.99 is good.
         self.gamma = 0.99
         self.epsilon = 1.0

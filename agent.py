@@ -1,7 +1,7 @@
 """ Our Agent that needs to beat the SImpleAI """
 import os
 from pong import Pong
-from policy import Policy
+from policy_3lin import Policy
 from torch.distributions import Categorical
 import torch
 import torch.nn.functional as F
@@ -32,7 +32,7 @@ class Agent(object):
         # Try adam after we have a working solution
         self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=1e-4)
         # Batch size 10-80 is good by Oliver. Takes longer to train when bigger batch size, but learns steadyer and softmax does not overflow
-        self.batch_size = 50
+        self.batch_size = 20
         # Gamma 0.99 is good.
         self.gamma = 0.99
         self.epsilon = 1.0
@@ -118,8 +118,8 @@ class Agent(object):
             
             self.update_policy()
 
-        #if episode_num % 4000 == 0:
-         #   self.save_model_run()
+        if episode_num % 5000 == 0:
+           self.save_model_run()
 
     def update_policy(self):
         

@@ -102,7 +102,7 @@ try:
     print("Training finished.")
     print("Total time used: {}".format(datetime.now() - start))
 
-except KeyboardInterrupt:
+except:
     print("Interrupted!")
     save_model_final(player)
     # Training is finished - plot rewards

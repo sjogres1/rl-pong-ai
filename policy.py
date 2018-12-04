@@ -43,9 +43,9 @@ class Policy(torch.nn.Module):
         # Softmax returns a probality of each action.
 
         # If still does not learn, we can try to normalize the x values before feeding them to softmax
-        # x_max = torch.max(x)
-        x = x - torch.mean(x)
-        # x = torch.div(x,x_max)
+         x_max = torch.max(x)
+        #x = x - torch.mean(x)
+         x = torch.div(x,x_max)
         
         return F.softmax(x, dim=-1) # should this be 1?
 

@@ -118,8 +118,8 @@ class Agent(object):
             
             self.update_policy()
 
-        #if episode_num % 4000 == 0:
-         #   self.save_model_run()
+        if episode_num % 4000 == 0:
+            self.save_model_run()
 
     def update_policy(self):
       

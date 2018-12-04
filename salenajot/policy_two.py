@@ -15,8 +15,8 @@ class Policy(torch.nn.Module):
         self.conv_2 = torch.nn.Conv2d(32, 64, kernel_size=4, stride=2)
         self.conv_3 = torch.nn.Conv2d(64, 64, kernel_size=3, stride=1)
         # Create linear neural networks
-        self.lin1 = torch.nn.Linear(5184, 200) # You can try and change hidden layer 200-220
-        self.lin2 = torch.nn.Linear(200, action_space)
+        self.lin1 = torch.nn.Linear(5184, 512) # You can try and change hidden layer 200-220
+        self.lin2 = torch.nn.Linear(512, action_space)
         self.init_weights()
 
     def init_weights(self):
@@ -39,7 +39,12 @@ class Policy(torch.nn.Module):
 
         #Output/activation of the last neural network that gives action (3 actions in total)
         x = self.lin2(x)
-
+        
+        # If still does not learn, we can try to normalize the x values before feeding them to softmax
+        x_max = torch.max(x)
+        # x = x - torch.mean(x)
+        x = torch.div(x,x_max)
+        
         # Softmax returns a probality of each action
         return F.softmax(x, dim=-1) # should this be 1?
 

@@ -14,9 +14,9 @@ class Policy(torch.nn.Module):
         self.conv_2 = torch.nn.Conv2d(32, 64, kernel_size=4, stride=2)
         self.conv_3 = torch.nn.Conv2d(64, 64, kernel_size=3, stride=1)
         # Create linear neural networks
-        self.lin1 = torch.nn.Linear(5184, 700) # Default was 784. Jagusta run one with 200 and one with 784
+        self.lin1 = torch.nn.Linear(5184, 200) # Default was 784. Jagusta run one with 200 and one with 784
         # Maybe put one more layer here, hint from Oliver if still does not work
-        self.lin2 = torch.nn.Linear(700, action_space)
+        self.lin2 = torch.nn.Linear(200, action_space)
         self.init_weights()
 
     def init_weights(self):

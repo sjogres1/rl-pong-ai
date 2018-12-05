@@ -32,7 +32,7 @@ class Agent(object):
         # Try adam after we have a working solution
         self.optimizer = torch.optim.RMSprop(policy.parameters(),lr=1e-4)
         # Batch size 10-80 is good by Oliver. Takes longer to train when bigger batch size, but learns steadyer and softmax does not overflow
-        self.batch_size = 20
+        self.batch_size = 210
         # Gamma 0.99 is good.
         self.gamma = 0.99
         self.epsilon = 1.0

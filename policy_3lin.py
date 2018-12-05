@@ -6,15 +6,15 @@ import torch.nn.functional as F
 
 class Policy(torch.nn.Module):
     def __init__(self, action_space):
-       
         super().__init__()
         # Create convolutional neural network
         # stride could be betweeen 2-3
-        self.conv_1 = torch.nn.Conv2d(1, 32, kernel_size=8, stride=4)
-        self.conv_2 = torch.nn.Conv2d(32, 64, kernel_size=4, stride=2)
+        self.conv_1 = torch.nn.Conv2d(1, 32, kernel_size=5, stride=4)
+        self.conv_2 = torch.nn.Conv2d(32, 64, kernel_size=3, stride=2)
         self.conv_3 = torch.nn.Conv2d(64, 64, kernel_size=3, stride=1)
         # Create linear neural networks
-        self.lin1 = torch.nn.Linear(5184, 200) # Default was 784. Jagusta run one with 200 and one with 784
+        # Default was 784. Jagusta run one with 200 and one with 784
+        self.lin1 = torch.nn.Linear(5760, 200)
         self.lin2 = torch.nn.Linear(200, 100)# Maybe put one more layer here, hint from Oliver if still does not work
         self.lin3 = torch.nn.Linear(100, action_space)
         self.init_weights()
@@ -33,19 +33,21 @@ class Policy(torch.nn.Module):
        
         # Relu layers return Tensor size of [1, 64, 9, 9]
         # Reshape the Tensor to match fit linear nn
-        x = x.view(-1, 5184)
-          # Going through linear neural network layer with relu function
+        x = x.view(-1, 5760)
+        
+        # Going through linear neural network layer with relu function
         x = F.relu(self.lin1(x))
+        x = F.relu(self.lin2(x))
 
         #Output/activation of the last neural network that gives action (3 actions in total)
-        x = self.lin2(x)
         x = self.lin3(x)
-        # Softmax returns a probality of each action.
-        
+
         # If still does not learn, we can try to normalize the x values before feeding them to softmax
         x_max = torch.max(x)
         # x = x - torch.mean(x)
         x = torch.div(x,x_max)
+
+        # Softmax returns a probality of each action.
         return F.softmax(x, dim=-1) # should this be 1?
 
 

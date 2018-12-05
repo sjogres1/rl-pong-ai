@@ -102,7 +102,7 @@ try:
     print("Training finished.")
     print("Total time used: {}".format(datetime.now() - start))
 
-except:
+except KeyboardInterrupt:
     print("Interrupted!")
     save_model_final(player)
     # Training is finished - plot rewards
@@ -112,6 +112,10 @@ except:
     # plt.title("Reward history (sig=%f, net 18)" % agent.policy.sigma.item())
     plt.show()
     print("Training finished.")
+except:
+    print("Exception thrown!")
+    save_model_final(player)
+    raise
 
 # Needs to be called in the end to shut down pygame
 env.end()

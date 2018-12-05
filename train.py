@@ -53,6 +53,7 @@ try:
         # Reset the environment and observe initial states for both players
         (ob1, ob2) = env.reset()
         while not done:
+            
 
             # Get actions for both agents
             action1, aprob = player.get_action(ob1, episode_num)
@@ -116,6 +117,10 @@ except:
     print("Exception thrown!")
     save_model_final(player)
     raise
+
+finally:
+    # Needs to be called in the end to shut down pygame
+    env.end()
 
 # Needs to be called in the end to shut down pygame
 env.end()

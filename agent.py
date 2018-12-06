@@ -20,12 +20,11 @@ def discount_rewards(r, gamma):
 
 
 class Agent(object):
-    def __init__(self, env, player_id=1):
+    def __init__(self, player_id=1):
         policy = Policy(3)
-        self.env = env
         self.player_id = player_id
         self.name = "uber_AI"
-        self.model_file = self.init_run_model_file_name()
+        self.model_file, self.param_file = self.init_run_model_file_name()
         self.train_device = "cuda"
         self.policy = policy.to(self.train_device)
         # Learning rates:  1e-3, 1e-4, 1e-5 are used in other places. 1e-4 is good, but we can also try out 1e-3 and 1e-5
@@ -93,7 +92,7 @@ class Agent(object):
 
     def reset(self):
         """ Resets the agent to inital state """
-        return self.env.reset()
+        return 0
 
 
     def episode_finished(self, episode_num):
@@ -161,14 +160,21 @@ class Agent(object):
         return self.to_tensor(image)
 
     def init_run_model_file_name(self,):
-        model_file = "Pong_params_run.mdl"
+        param_file = "Pong_params_run.mdl"
+        model_file = "Pong_model_run.obj"
+        i = 1
+        while os.path.isfile(param_file):
+            param_file = "Pong_params_run%s.mdl" % i
+            i += 1
         i = 1
         while os.path.isfile(model_file):
-            model_file = "Pong_params_run%s.mdl" % i
+            model_file = "Pong_model_run%s.obj" % i
             i += 1
-        return model_file
+        return model_file, param_file
 
     def save_model_run(self):
-        torch.save(self.policy.state_dict(), self.model_file)
+        torch.save(self.policy.state_dict(), self.param_file)
+        torch.save(self, self.model_file)
+        print("Param saved to: ", self.param_file)
         print("Model saved to: ", self.model_file)
 

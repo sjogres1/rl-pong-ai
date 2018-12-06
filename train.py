@@ -13,6 +13,10 @@ from datetime import datetime
 parser = argparse.ArgumentParser()
 parser.add_argument("--headless", action="store_true",
                     help="Run in headless mode")
+parser.add_argument("--model", "-m", type=str, default=None,
+                    help="Model to be tested")
+parser.add_argument("--params", "-p", type=str, default=None,
+                    help="Model to be tested")
 args = parser.parse_args()
 
 
@@ -22,24 +26,39 @@ def plot(observation):
 
 
 def save_model_final(player):
-    model_file = "Pong_params.mdl"
+    param_file = "Pong_params.mdl"
+    model_file = "Pong_model.obj"
+    i = 1
+    while os.path.isfile(param_file):
+        param_file = "Pong_params%s.mdl" % i
+        i += 1
     i = 1
     while os.path.isfile(model_file):
-        model_file = "Pong_params%s.mdl" % i
+        model_file = "Pong_model%s.obj" % i
         i += 1
-    torch.save(player.policy.state_dict(), model_file)
+    torch.save(player.policy.state_dict(), param_file)
+    torch.save(player, model_file)
+    print("Params saved to: ", param_file)
     print("Model saved to: ", model_file)
 
 start = datetime.now()
 
 # Create environment
 env = Pong(headless=args.headless)
-episodes = 990000
+episodes = 10
 
 player_id = 1
 opponent_id = 3 - player_id
 opponent = PongAi(env, opponent_id)
-player = Agent(env, player_id)
+
+if args.model:
+    player = torch.load(args.model)
+elif args.params:
+    player = Agent(player_id)
+    state_dict = torch.load(args.model)
+    player.policy.load_state_dict(state_dict)
+else:
+    player = Agent(player_id)
 
 env.set_names(player.get_name(), opponent.get_name())
 # Initialize lists

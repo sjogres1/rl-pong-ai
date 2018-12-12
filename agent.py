@@ -24,7 +24,7 @@ class Agent(object):
         policy = Policy(3)
         self.player_id = player_id
         self.name = "uber_AI"
-        self.model_file, self.param_file = self.init_run_model_file_name()
+        self.model_file, self.param_file = self._init_run_model_file_name()
         self.train_device = "cuda"
         self.policy = policy.to(self.train_device)
         # Learning rates:  1e-3, 1e-4, 1e-5 are used in other places. 1e-4 is good, but we can also try out 1e-3 and 1e-5
@@ -51,7 +51,7 @@ class Agent(object):
         """ Returns name of the agent """
         return self.name
 
-    def update_epsilon(self, episode_num):
+    def _update_epsilon(self, episode_num):
         # Update epsilon. In 1000 episodes it is half of the previous epsilon. Asked from Oliver
         epsilon = self.a/(self.a + (episode_num/1000))
         if epsilon < 0.01:
@@ -119,17 +119,17 @@ class Agent(object):
         loss.backward()
 
         # Update epsilon value
-        self.update_epsilon(episode_num)
+        self._update_epsilon(episode_num)
 
         # Updates policy. In default batch_size update is done after each episode
         if (episode_num+1) % self.batch_size == 0: 
             
-            self.update_policy()
+            self._update_policy()
 
         if episode_num % 5000 == 0:
-           self.save_model_run()
+           self._save_model_run()
 
-    def update_policy(self):
+    def _update_policy(self):
         
         self.optimizer.step()
         self.optimizer.zero_grad()
@@ -147,7 +147,7 @@ class Agent(object):
         self.rewards.append(torch.Tensor([reward]))
 
     # Reshape preprosessed image so it goes nicely to neural network 
-    def to_tensor(self, x):
+    def _to_tensor(self, x):
         x = np.array(x)
         # Width and height were wrong way around, we changed these with Oliver
         x = x.reshape(-1, 1, 100, 105) # before (-1,1,100,105)
@@ -166,9 +166,9 @@ class Agent(object):
         #print(image.shape)
         #plt.imshow(image)
         #plt.show()
-        return self.to_tensor(image)
+        return self._to_tensor(image)
 
-    def init_run_model_file_name(self,):
+    def _init_run_model_file_name(self,):
         param_file = "Pong_params_run.mdl"
         model_file = "Pong_model_run.obj"
         i = 1
@@ -181,7 +181,7 @@ class Agent(object):
             i += 1
         return model_file, param_file
 
-    def save_model_run(self):
+    def _save_model_run(self):
         torch.save(self.policy.state_dict(), self.param_file)
         torch.save(self, self.model_file)
         print("Param saved to: ", self.param_file)

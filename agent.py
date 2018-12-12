@@ -42,6 +42,10 @@ class Agent(object):
         self.grid_count = 0
         self.grid_action = None
 
+    def load_model(self, params):
+        """ Loads a policy from file """
+        state_dict = torch.load(params)
+        self.policy.load_state_dict(state_dict)
 
     def get_name(self):
         """ Returns name of the agent """
@@ -92,6 +96,11 @@ class Agent(object):
 
     def reset(self):
         """ Resets the agent to inital state """
+        self.observations = []
+        self.actions = []
+        self.rewards = []
+        self.grid_count = 0
+        self.grid_action = None
         return 0
 
 
@@ -177,4 +186,3 @@ class Agent(object):
         torch.save(self, self.model_file)
         print("Param saved to: ", self.param_file)
         print("Model saved to: ", self.model_file)
-
